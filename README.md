@@ -13,6 +13,8 @@ You can add default mixins in PHP.
 @co-white
 	color: #fff
 
+// comment
+/* other comment */
 *
 	box-sizing: border-box
 
@@ -26,6 +28,10 @@ You can add default mixins in PHP.
 
 		:hover, .haha
 			@co-white
+
+		// convert to @media (max-width: 150px)
+		<150px
+			color: red
 ```
 
 ## Usage
