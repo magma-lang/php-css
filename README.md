@@ -1,5 +1,5 @@
 # A CSS Preprocessor for PHP
-Its Fast and easy
+Its fast and easy
 
 ## Example
 
@@ -37,3 +37,6 @@ $file = $engine->go( __DIR__. 'css/test.mgcss' );
 
 $absoluteFilePath = __DIR__. '/tmp/'. $file;
 ```
+
+## Default Mixins
+[Link](default-mixins.md)
