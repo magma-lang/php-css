@@ -1,0 +1,19 @@
+@bg-white
+	background: #fff
+
+@co-white
+	color: #fff
+
+*
+	box-sizing: border-box
+
+::root
+	--main-var: #fff
+
+.container
+	
+	.class
+		color: --main-var
+
+		:hover, .haha
+			@co-white

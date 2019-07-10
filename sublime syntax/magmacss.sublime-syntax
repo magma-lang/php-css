@@ -1,0 +1,68 @@
+%YAML 1.2
+---
+name: Magma CSS
+file_extensions:
+  - mgcss
+scope: source.mgcss
+
+variables:
+  properties: 'auto'
+
+contexts:
+  main:
+    - include: comments
+    - include: mixins
+    - include: global
+
+  comments:
+    - match: /\*
+      set:
+        - meta_scope: comment.block.mg
+        - match: \*/
+          pop: true
+    - match: //.*$
+      scope: comment.line.mg
+
+  mixins:
+    - match: '^\s*@[\w\-]+\s*$'
+      scope: keyword.mixin.mg
+
+  global:
+    # property
+    - match: ^(?=\s*[a-z\-][a-zA-Z0-9\-]*:\s.*?$)
+      set:
+        - match: '''.*?'''
+          scope: string.single.mg
+
+        - match: '".*?"'
+          scope: string.double.mg
+
+        - match: '(?<=\s|^|\()-?[0-9.]+'
+          scope: constant.language.number.mg
+
+        - match: '(?<=\d)[a-z%]+'
+          scope: keyword.value.type.mg
+
+        - match: '(?<=\s)#[a-f0-9]{3,6}'
+          scope: constant.language.hex.mg
+
+        - match: '[a-zA-Z\-][a-zA-Z0-9\-]*'
+          scope: variable.function.property.mg
+
+        - match: '\n'
+          pop: true
+
+    # selector
+    - match: ^
+      set:
+        - match: '(?<=\s|^|\b)(\.|#)[a-zA-Z][a-zA-Z0-9\-]*'
+          scope: entity.name.class.mg
+
+        - match: '(?<=\s|^|\b)[a-zA-Z][a-zA-Z0-9]*'
+          scope: keyword.value.core-el.mg
+
+        - match: '(?<=\s|^)\*(?=\s|$)'
+          scope: keyword.value.core-el.mg
+
+        - match: '\n'
+          pop: true
