@@ -39,6 +39,10 @@ You can add default mixins in PHP.
 require_once(  __DIR__. '/engine.php' );
 
 $engine = new MagmaCSS\Engine( __DIR__. '/tmp/', true );
+
+// add mixins
+$engine->addMixin( 'default', 'string: or-map' );
+
 $file = $engine->go( __DIR__. 'css/test.mgcss' );
 
 $absoluteFilePath = __DIR__. '/tmp/'. $file;
