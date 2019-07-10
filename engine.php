@@ -50,8 +50,8 @@ class Engine {
 
 		// Position
 		$this->addMixin( 'fixed', 'position: fixed' );
-		$this->addMixin( 'relative', 'position: relative' );
 		$this->addMixin( 'absolute', 'position: absolute' );
+		$this->addMixin( 'relative', 'position: relative' );
 
 		// Display
 		$this->addMixin( 'block', 'display: block' );
@@ -118,16 +118,35 @@ class Engine {
 
 		$selectors = [];
 
+		$inSpecial = false;
+		$actSpec = '';
+		$levelSpec = 0;
+		$specials = [];
+
 		foreach ( $lines as $num => $line ) {
 
 			// if empty line skip
 			if ( preg_match( '/^\s*$/', $line ) )
 				continue;
 
+			// short version for media queries
+			// <150px converto @media (max-width: 150px)
+			// >150pxconverto @media (min-width: 150px)
+
+			$line = preg_replace( '/^(\s*)<(\d+[a-z%]+)\s*$/', '$1@media (max-width: $2)', $line );
+			$line = preg_replace( '/^(\s*)>(\d+[a-z%]+)\s*$/', '$1@media (min-width: $2)', $line );
+
 			$level = $this->countLevel( $line );
 
+			// special management
+			if ( $inSpecial && $level <= $levelSpec )
+				$inSpecial = false;
+
+			if ( $inSpecial )
+				$level--;
+
 			// Properties
-			$prop = preg_match( '/^.*:\s.*$/', $line ) > 0;
+			$prop = preg_match( '/^\s*[^@]*:\s.*$/', $line ) > 0;
 			if ( $prop ) {
 				$ctn = trim( $line );
 				$ctn = preg_replace( '/(?<=:\s)(--[a-zA-Z0-9\-]*)/m', 'var($0)', $ctn );
@@ -139,10 +158,25 @@ class Engine {
 					// prop in select
 					$sel = $this->buildSelector( $selTree, $level );
 
-					if ( !isset( $selectors[$sel] ) )
-						$selectors[$sel] = [];
+					if ( $inSpecial ) {
 
-					$selectors[$sel][] = $ctn;
+						if ( !isset( $specials[$actSpec] ) )
+							$specials[$actSpec] = [];
+
+						if ( !isset( $specials[$actSpec][$sel] ) )
+							$specials[$actSpec][$sel] = [];
+
+						$specials[$actSpec][$sel][] = $ctn;
+							
+
+					} else {
+
+						if ( !isset( $selectors[$sel] ) )
+							$selectors[$sel] = [];
+
+						$selectors[$sel][] = $ctn;
+
+					}
 
 				} else
 					throw new Error( sprintf( 'No selector or mixin before line %d: %s', $num, $line ) );
@@ -170,10 +204,24 @@ class Engine {
 					// prop in select
 					$sel = $this->buildSelector( $selTree, $level );
 
-					if ( !isset( $selectors[$sel] ) )
-						$selectors[$sel] = [];
+					if ( $inSpecial ) {
 
-					$selectors[$sel] = array_merge( $selectors[$sel], $mixins[$mixinName] );
+						if ( !isset( $specials[$actSpec] ) )
+							$specials[$actSpec] = [];
+
+						if ( !isset( $specials[$actSpec][$sel] ) )
+							$specials[$actSpec][$sel] = [];
+
+						$specials[$actSpec][$sel] = array_merge( $specials[$actSpec][$sel], $mixins[$mixinName] );
+
+					} else {
+
+						if ( !isset( $selectors[$sel] ) )
+							$selectors[$sel] = [];
+
+						$selectors[$sel] = array_merge( $selectors[$sel], $mixins[$mixinName] );
+
+					}
 
 				} else {
 					$inMixins = true;
@@ -186,6 +234,28 @@ class Engine {
 
 			}
 
+			// if special
+			if ( preg_match( '/^\s*@/', $line ) ) {
+
+				// echo 'special>: '. $line. "\n";
+
+				$inSpecial = true;
+				$inSelect = false;
+				$inMixins = false;
+				$spec = trim( $line );
+				$actSpec = $spec;
+				$levelSpec = $level;
+
+				continue;
+
+			}
+
+			/* $inSpecial = false;
+		$specials = [];
+		*/
+
+			// echo 'selector: '. $line. "\n";
+
 			// else we have a selector
 			$inSelect = true;
 			$inMixins = false;
@@ -193,10 +263,12 @@ class Engine {
 
 			$selTree[$level] = trim( $line );
 
+			// var_dump( $selTree, $specials );
+
 
 		}
 
-		return $this->buildFromSelectors( $selectors );
+		return $this->buildFromSpecials( $specials ). $this->buildFromSelectors( $selectors );
 
 	}
 
@@ -236,11 +308,29 @@ class Engine {
 
 	public function buildFromSelectors( array $selectors ) {
 
-		$str = '';
+		$str = "/* Selectors */\n";
 		foreach ( $selectors as $sel => $props ) {
-			$str .= $sel. ' {'. "\n";
+			$str .= $sel. " {\n";
 			foreach ( $props as $prop )
 				$str .= "\t". $prop. ";\n";
+			$str .= "}\n\n";
+		}
+
+		return $str;
+
+	}
+
+	public function buildFromSpecials( array $specials ) {
+
+		$str = "/* Specials */\n";
+		foreach ( $specials as $spec => $selectors ) {
+			$str .= $spec. " {\n\n";
+			foreach ( $selectors as $sel => $props ) {
+				$str .= "\t". $sel. " {\n";
+				foreach ( $props as $prop )
+					$str .= "\t\t". $prop. ";\n";
+				$str .= "\t}\n\n";
+			}
 			$str .= "}\n\n";
 		}
 
