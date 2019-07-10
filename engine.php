@@ -6,7 +6,7 @@
 @docs: css.magma-lang.com/php/docs/
 */
 
-namespace MagmaCss;
+namespace MagmaCSS;
 
 use \Error;
 
