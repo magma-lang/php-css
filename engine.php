@@ -2,7 +2,7 @@
 /*
 @package: Magma PHP Minifier for JS and CSS
 @author: Sören Meier <info@s-me.ch>
-@version: 0.1 <2019-07-05>
+@version: 0.1 <2019-07-10>
 @docs: css.magma-lang.com/php/docs/
 */
 
@@ -237,8 +237,6 @@ class Engine {
 			// if special
 			if ( preg_match( '/^\s*@/', $line ) ) {
 
-				// echo 'special>: '. $line. "\n";
-
 				$inSpecial = true;
 				$inSelect = false;
 				$inMixins = false;
@@ -250,20 +248,12 @@ class Engine {
 
 			}
 
-			/* $inSpecial = false;
-		$specials = [];
-		*/
-
-			// echo 'selector: '. $line. "\n";
-
 			// else we have a selector
 			$inSelect = true;
 			$inMixins = false;
 			$sel = trim( $line );
 
 			$selTree[$level] = trim( $line );
-
-			// var_dump( $selTree, $specials );
 
 
 		}
