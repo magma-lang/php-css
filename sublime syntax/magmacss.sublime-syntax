@@ -27,6 +27,13 @@ contexts:
     - match: '^\s*@[\w\-]+\s*$'
       scope: keyword.mixin.mg
 
+  digits:
+    - match: '(?<=\s|^|\(|<|>)-?[0-9.]+'
+      scope: constant.language.number.mg
+
+    - match: '(?<=\d)[a-z%]+'
+      scope: keyword.value.type.mg
+
   global:
     # property
     - match: ^(?=\s*[a-z\-][a-zA-Z0-9\-]*:\s.*?$)
@@ -37,11 +44,7 @@ contexts:
         - match: '".*?"'
           scope: string.double.mg
 
-        - match: '(?<=\s|^|\()-?[0-9.]+'
-          scope: constant.language.number.mg
-
-        - match: '(?<=\d)[a-z%]+'
-          scope: keyword.value.type.mg
+        - include: digits
 
         - match: '(?<=\s)#[a-f0-9]{3,6}'
           scope: constant.language.hex.mg
@@ -55,11 +58,40 @@ contexts:
     # selector
     - match: ^
       set:
+
+        - match: '(?<=\s|^)(?=@media|@keyframes)'
+          set:
+
+            - include: digits
+
+            - match: '(?<=\s|^)@(media|keyframes)(?=\s|$)'
+              scope: keyword.value.core-el.mg
+
+            - match: '(?<=:\s)[a-zA-Z][\w\-]*(?=\s|\))|(?<=\s|\()[a-zA-Z][\w\-]*(?=:)'
+              scope: variable.function.property.mg
+
+            - match: '\n'
+              pop: true
+
+        - match: '(?=^\s*<|^\s*>)'
+          set:
+
+            - include: digits
+
+            - match: '\n'
+              pop: true
+
+
         - match: '(?<=\s|^|\b)(\.|#)[a-zA-Z][a-zA-Z0-9\-]*'
           scope: entity.name.class.mg
 
-        - match: '(?<=\s|^|\b)[a-zA-Z][a-zA-Z0-9]*'
+        - match: '(?<=\s|^)[a-zA-Z][a-zA-Z0-9]*'
           scope: keyword.value.core-el.mg
+
+        - match: '(?<=\s|^)@(media|keyframes)(?=\s|$)'
+          scope: keyword.value.core-el.mg
+
+    #    - include: digits
 
         - match: '(?<=\s|^)\*(?=\s|$)'
           scope: keyword.value.core-el.mg

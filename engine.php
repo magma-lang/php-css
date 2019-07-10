@@ -1,6 +1,6 @@
 <?php
 /*
-@package: Magma PHP Minifier for JS and CSS
+@package: A CSS Preprocessor for PHP
 @author: Sören Meier <info@s-me.ch>
 @version: 0.1 <2019-07-10>
 @docs: css.magma-lang.com/php/docs/
@@ -12,23 +12,13 @@ use \Error;
 
 class Engine {
 
-	public $debug = false;
+	protected $debug = false;
 
 	protected $tmpPath = '';
 
 	protected $globalMixins = [];
 
-	public function __construct( string $tmpPath, bool $debug = false ) {
-
-		$this->tmpPath = $tmpPath;
-		$this->debug = $debug;
-		if ( !is_dir( $this->tmpPath ) )
-			mkdir( $this->tmpPath );
-
-		$this->defaultMixins();
-
-	}
-
+	// METHODS
 	public function go( string $file ) {
 
 		$filename = md5( $file ). '.css';
@@ -43,9 +33,36 @@ class Engine {
 		file_put_contents( $out, $str );
 		return $filename;
 
+	}
+
+	public function parseRaw( string $ctn ) {
+		return $this->parse( $ctn );
+	}
+
+	public function cleanTmp() {
+		self::deleteDir( $this->tmpPath );
+	}
+
+	// the properties need to be css valid expect (simicolon)
+	public function addMixin( string $name, $props ) {
+		if ( !is_array( $props ) )
+			$props = [$props];
+		$this->globalMixins[$name] = $props;
+	}
+
+	// INIT
+	public function __construct( string $tmpPath, bool $debug = false ) {
+
+		$this->tmpPath = $tmpPath;
+		$this->debug = $debug;
+		if ( !is_dir( $this->tmpPath ) )
+			mkdir( $this->tmpPath );
+
+		$this->defaultMixins();
 
 	}
 
+	// PROTECTED
 	protected function defaultMixins() {
 
 		// Position
@@ -93,14 +110,7 @@ class Engine {
 
 	}
 
-	// the properties need to be css valid expect (simicolon)
-	public function addMixin( string $name, $props ) {
-		if ( !is_array( $props ) )
-			$props = [$props];
-		$this->globalMixins[$name] = $props;
-	}
-
-	public function parse( string $str ) {
+	protected function parse( string $str ) {
 
 		$str = rtrim( str_replace( "\r", '', $str ) );
 		$str = preg_replace( '/(\/\*.*?\*\/)|(^\s*\/\/.*?$)/m', '', $str );
@@ -296,7 +306,7 @@ class Engine {
 		return $count;
 	}
 
-	public function buildFromSelectors( array $selectors ) {
+	protected function buildFromSelectors( array $selectors ) {
 
 		$str = "/* Selectors */\n";
 		foreach ( $selectors as $sel => $props ) {
@@ -310,7 +320,7 @@ class Engine {
 
 	}
 
-	public function buildFromSpecials( array $specials ) {
+	protected function buildFromSpecials( array $specials ) {
 
 		$str = "/* Specials */\n";
 		foreach ( $specials as $spec => $selectors ) {
@@ -325,6 +335,18 @@ class Engine {
 		}
 
 		return $str;
+
+	}
+
+	protected static function deleteDir( string $dir ) {
+
+		foreach ( glob( $dir. '*', GLOB_MARK ) as $path )
+			if ( is_file( $path ) )
+				unlink( $path );
+			else
+				self::deleteDir( $path );
+
+		rmdir( $dir );
 
 	}
 
