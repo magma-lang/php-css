@@ -3,7 +3,7 @@
 @package: Magma PHP Minifier for JS and CSS
 @author: Sören Meier <info@s-me.ch>
 @version: 0.1 <2019-07-05>
-@docs: minifier.magma-lang.com/php/docs/
+@docs: css.magma-lang.com/php/docs/
 */
 
 namespace MagmaCss;
@@ -174,8 +174,6 @@ class Engine {
 						$selectors[$sel] = [];
 
 					$selectors[$sel] = array_merge( $selectors[$sel], $mixins[$mixinName] );
-					/*var_dump( 'prop inSelect', $sels );
-					die;*/
 
 				} else {
 					$inMixins = true;
@@ -192,27 +190,11 @@ class Engine {
 			$inSelect = true;
 			$inMixins = false;
 			$sel = trim( $line );
-			// should split by comma
+
 			$selTree[$level] = trim( $line );
 
 
-			// short media
-			// echo $line. "\n";
-
-
-
-			// if (  )
-
-			// $tree
-
-			// state
-
 		}
-
-		/*var_dump( $mixins );
-		var_dump( $selectors );*/
-
-		//
 
 		return $this->buildFromSelectors( $selectors );
 
