@@ -76,8 +76,11 @@ class Engine {
 		$this->addMixin( 'flex', 'display: flex' );
 		$this->addMixin( 'grid', 'display: grid' );
 
-		// borderbox
+		// box-sizing
 		$this->addMixin( 'border-box', 'box-sizing: border-box' );
+
+		// content
+		$this->addMixin( 'ctn', 'content: ""' );
 
 		// abs center
 		$this->addMixin( 'abs-center', [
