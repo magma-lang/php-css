@@ -29,7 +29,7 @@ contexts:
       scope: keyword.mixin.mg
 
   digits:
-    - match: '(?<=\s|^|\(|<|>)-?[0-9.]+'
+    - match: '(?<=\s|^|\(|<|>|,)-?[0-9.]+'
       scope: constant.language.number.mg
 
     - match: '(?<=\d)[a-z%]+'
