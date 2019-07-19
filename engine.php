@@ -19,9 +19,10 @@ class Engine {
 	protected $globalMixins = [];
 
 	// METHODS
-	public function go( string $file ) {
+	public function go( string $file, string $niceName = null ) {
 
-		$filename = md5( $file ). '.css';
+		$filename = ( is_null( $niceName ) ? md5( $file ) : $niceName ). '.css';
+
 		$out = $this->tmpPath. $filename;
 
 		if ( is_file( $out ) && !$this->debug )
