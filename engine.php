@@ -2,7 +2,7 @@
 /*
 @package: A CSS Preprocessor for PHP
 @author: Sören Meier <info@s-me.ch>
-@version: 0.1 <2019-07-10>
+@version: 0.1.1 <2019-07-19>
 @docs: css.magma-lang.com/php/docs/
 */
 
@@ -212,7 +212,7 @@ class Engine {
 						throw new Error( sprintf( 'Could not find mixin %s, on line %d', $mixinName, $num ) );
 
 					// prop in select
-					$sel = $this->buildSelector( $selTree, $level );
+					$sel = $this->buildSelector( $selTree, $level, $inSpecial );
 
 					if ( $inSpecial ) {
 
@@ -248,7 +248,7 @@ class Engine {
 			if ( preg_match( '/^\s*@/', $line ) ) {
 
 				$inSpecial = true;
-				$inSelect = false;
+				$inSelect = $level > 0;
 				$inMixins = false;
 				$spec = trim( $line );
 				$actSpec = $spec;
@@ -272,7 +272,7 @@ class Engine {
 
 	}
 
-	protected function buildSelector( array $inTree, int $level ) {
+	protected function buildSelector( array $inTree, int $level, bool $withTab = false ) {
 
 		$tree = [];
 		foreach ( array_slice( $inTree, 0, $level ) as $tr )
@@ -282,15 +282,22 @@ class Engine {
 		foreach ( $tree as $tr ) {
 
 			$nSels = [];
-			foreach ( $tr as $t )
+			foreach ( $tr as $t ) {
+
+				$noSpace = $t[0] === ':' || $t[0] === '+' && ( $t[1] ?? ' ' ) !== ' ';
+				if ( $noSpace && $t[0] === '+' )
+					$t = substr( $t, 1 );
+
 				foreach ( $sels as $sel )
-					$nSels[] = sprintf( '%s%s%s', $sel, $t[0] === ':' ? '' : ' ', $t );
+					$nSels[] = sprintf( '%s%s%s', $sel, $noSpace ? '' : ' ', $t );
+
+			}
 
 			$sels = $nSels;
 
 		}
 
-		return implode( ",\n", $sels );
+		return implode( ",\n". ( $withTab ? "\t" : '' ), $sels );
 
 	}
 
@@ -308,7 +315,7 @@ class Engine {
 
 	protected function buildFromSelectors( array $selectors ) {
 
-		$str = "/* Selectors */\n";
+		$str = '';
 		foreach ( $selectors as $sel => $props ) {
 			$str .= $sel. " {\n";
 			foreach ( $props as $prop )
@@ -322,7 +329,7 @@ class Engine {
 
 	protected function buildFromSpecials( array $specials ) {
 
-		$str = "/* Specials */\n";
+		$str = '';
 		foreach ( $specials as $spec => $selectors ) {
 			$str .= $spec. " {\n\n";
 			foreach ( $selectors as $sel => $props ) {

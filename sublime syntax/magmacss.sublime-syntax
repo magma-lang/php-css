@@ -1,6 +1,7 @@
 %YAML 1.2
 ---
 name: Magma CSS
+# version 0.1.1 <2019-07-19>
 file_extensions:
   - mgcss
 scope: source.mgcss
@@ -15,12 +16,12 @@ contexts:
     - include: global
 
   comments:
-    - match: /\*
+    - match: '^\s*/\*'
       set:
         - meta_scope: comment.block.mg
         - match: \*/
           pop: true
-    - match: //.*$
+    - match: '^\s*//.*$'
       scope: comment.line.mg
 
   mixins:
@@ -59,12 +60,12 @@ contexts:
     - match: ^
       set:
 
-        - match: '(?<=\s|^)(?=@media|@keyframes)'
+        - match: '(?<=\s|^)(?=@media|@keyframes|@supports)'
           set:
 
             - include: digits
 
-            - match: '(?<=\s|^)@(media|keyframes)(?=\s|$)'
+            - match: '(?<=\s|^)@(media|keyframes|supports)(?=\s|$)'
               scope: keyword.value.core-el.mg
 
             - match: '(?<=:\s)[a-zA-Z][\w\-]*(?=\s|\))|(?<=\s|\()[a-zA-Z][\w\-]*(?=:)'
@@ -82,7 +83,7 @@ contexts:
               pop: true
 
 
-        - match: '(?<=\s|^|\b)(\.|#)[a-zA-Z][a-zA-Z0-9\-]*'
+        - match: '(?<=\s|^|\b|\+)(\.|#)[a-zA-Z][a-zA-Z0-9\-]*'
           scope: entity.name.class.mg
 
         - match: '(?<=\s|^)[a-zA-Z][a-zA-Z0-9]*'
