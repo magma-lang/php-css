@@ -15,6 +15,9 @@
 ## box-sizing
 - @border-box
 
+## content
+- @ctn // content: ""
+
 ## Others
 
 ### @abs-center
