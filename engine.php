@@ -2,7 +2,7 @@
 /*
 @package: A CSS Preprocessor for PHP
 @author: Sören Meier <info@s-me.ch>
-@version: 0.1.1 <2019-07-19>
+@version: 0.1.2 <2019-07-19>
 @docs: css.magma-lang.com/php/docs/
 */
 
@@ -122,7 +122,7 @@ class Engine {
 	protected function parse( string $str ) {
 
 		$str = rtrim( str_replace( "\r", '', $str ) );
-		$str = preg_replace( '/(\/\*.*?\*\/)|(^\s*\/\/.*?$)/m', '', $str );
+		$str = preg_replace( '/(\/\*.*?\*\/)|(^\s*\/\/.*?$)/ms', '', $str );
 		// $str = preg_replace( '/^\s*\/\/.*?$/m', '', $str );
 		$lines = explode( "\n", $str );
 
