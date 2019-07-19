@@ -66,6 +66,13 @@ class Engine {
 	// PROTECTED
 	protected function defaultMixins() {
 
+		// core
+		$this->addMixin( 'core', [
+			'margin: 0',
+			'padding: 0',
+			'box-sizing: border-box'
+		] );
+
 		// Position
 		$this->addMixin( 'fixed', 'position: fixed' );
 		$this->addMixin( 'absolute', 'position: absolute' );
@@ -105,12 +112,10 @@ class Engine {
 			'clear: both'
 		] );
 
-		// core
-		$this->addMixin( 'core', [
-			'margin: 0',
-			'padding: 0',
-			'box-sizing: border-box'
-		] );
+		// text transform
+		$this->addMixin( 'uppercase', 'text-transform: uppercase' );
+		$this->addMixin( 'lowercase', 'text-transform: lowercase' );
+		$this->addMixin( 'normalcase', 'text-transform: none' );
 
 	}
 
