@@ -1,5 +1,10 @@
 # Default Mixins
 
+### @core
+- margin: 0
+- padding: 0
+- box-sizing: border-box
+
 ## Position
 
 - @fixed
@@ -36,7 +41,7 @@
 - display: table
 - clear: both
 
-### @core
-- margin: 0
-- padding: 0
-- box-sizing: border-box
+### text-transform
+- @uppercase
+- @lowercase
+- @normalcase // none
