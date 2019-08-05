@@ -2,7 +2,7 @@
 /*
 @package: A CSS Preprocessor for PHP
 @author: Sören Meier <info@s-me.ch>
-@version: 0.1.2 <2019-07-19>
+@version: 0.1.3 <2019-08-05>
 @docs: css.magma-lang.com/php/docs/
 */
 
@@ -88,7 +88,7 @@ class Engine {
 		$this->addMixin( 'border-box', 'box-sizing: border-box' );
 
 		// content
-		$this->addMixin( 'ctn', 'content: ""' );
+		$this->addMixin( 'ctn', 'content: \'\'' );
 
 		// abs center
 		$this->addMixin( 'abs-center', [
@@ -277,7 +277,7 @@ class Engine {
 
 		}
 
-		return $this->buildFromSpecials( $specials ). $this->buildFromSelectors( $selectors );
+		return $this->buildFromSelectors( $selectors ). $this->buildFromSpecials( $specials );
 
 	}
 
